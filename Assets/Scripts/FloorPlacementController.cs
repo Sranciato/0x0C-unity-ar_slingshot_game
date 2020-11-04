@@ -9,9 +9,11 @@ using UnityEngine.UI;
 public class FloorPlacementController : MonoBehaviour
 {
     public GameManager gameManager;
+    [HideInInspector]
     public bool hasStarted;
     public Text selectPlane;
     public GameObject startButton;
+    public SoundManagerScript soundManagerScript;
     private List<GameObject> spawnNew = new List<GameObject>();
     private ARRaycastManager aRRaycastManager;
     private ARPlaneManager aRPlaneManager;
@@ -20,7 +22,7 @@ public class FloorPlacementController : MonoBehaviour
     static public ARPlane savePlane;
     static List<ARRaycastHit> hits = new List<ARRaycastHit>();
     Pose hitPose;
-    private bool surfaceFound = false;
+    private bool surfaceFound = false, playingMusic = false;
 
     public int numberOfTargets = 5;
 
@@ -79,6 +81,12 @@ public class FloorPlacementController : MonoBehaviour
         plane.GetComponent<MeshRenderer>().enabled = false;
         plane.GetComponent<LineRenderer>().enabled = false;
         plane.GetComponent<ARPlaneMeshVisualizer>().enabled = false;
+
+        if (!playingMusic)
+        {
+            soundManagerScript.PlaySound("startGameMusic");
+            playingMusic = true;
+        }
 
         foreach (var target in spawnNew)
         {

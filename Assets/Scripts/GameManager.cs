@@ -12,9 +12,11 @@ public class GameManager : MonoBehaviour
     public GameObject sessionOrigin;
     private FloorPlacementController placementController;
     private bool alreadySpawned = false;
+    public bool canGrabAmmo = true;
     public GameObject ammo;
     private GameObject _ammo;
     public GameObject explosionPrefab;
+    public SoundManagerScript soundManagerScript;
 
     // UI Objects
     public GameObject uiCanvas;
@@ -25,6 +27,7 @@ public class GameManager : MonoBehaviour
     int amountOfScore = 0, holdAmountOfAmmo = 0, targetsDestroyed = 0, numOfTargets = 0;
     void Start()
     {
+        canGrabAmmo = true;
         holdAmountOfAmmo = amountOfAmmo;
         placementController = sessionOrigin.GetComponent<FloorPlacementController>();
         ammoText.text = amountOfAmmo.ToString();
@@ -52,10 +55,13 @@ public class GameManager : MonoBehaviour
     public void DestroyAmmo()
     {
         Destroy(_ammo);
+        soundManagerScript.PlaySound("missedTarget");
         amountOfAmmo -= 1;
         ammoText.text = amountOfAmmo.ToString();
         if (amountOfAmmo < 1)
         {
+            canGrabAmmo = false;
+            soundManagerScript.PlaySound("gameOver");
             playAgainButton.SetActive(true);
         }
         alreadySpawned = false;
@@ -79,6 +85,7 @@ public class GameManager : MonoBehaviour
 
     public void PlayAgain()
     {
+        canGrabAmmo = true;
         placementController.StartButton();
         amountOfAmmo = holdAmountOfAmmo;
         ammoText.text = amountOfAmmo.ToString();
@@ -98,14 +105,24 @@ public class GameManager : MonoBehaviour
     public void DoExplosion(Transform explosionTransform)
     {
         targetsDestroyed += 1;
-        Debug.Log("TARGETS DESTROTED: " + targetsDestroyed + "NUMBER OF TARGETS: " + numOfTargets);
         GameObject explosion = Instantiate(explosionPrefab, explosionTransform.position, Quaternion.identity);
         StartCoroutine(DestroyExplosion(explosion));
+        soundManagerScript.PlaySound("hitTarget");
     }
 
     IEnumerator DestroyExplosion(GameObject explosion)
     {
         yield return new WaitForSeconds(5f);
         Destroy(explosion);
+    }
+
+    public void launchAmmo()
+    {
+        soundManagerScript.PlaySound("launched");
+    }
+
+    public void PressButton()
+    {
+        soundManagerScript.PlaySound("buttonPress");
     }
 }

@@ -53,7 +53,7 @@ public class Slingshot : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(touchPosition);
             RaycastHit hitObject;
-            if (Physics.Raycast(ray, out hitObject))
+            if (Physics.Raycast(ray, out hitObject) && gameManager.canGrabAmmo)
             {
                 if (hitObject.transform.tag == "Ammo")
                 {
@@ -95,6 +95,7 @@ public class Slingshot : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         lineRenderer.enabled = false;
         rb.AddForce(directionOfForce * (distance * 200f), ForceMode.Impulse);
+        gameManager.launchAmmo();
         shotAmmo = true;
     }
 
